@@ -1,24 +1,23 @@
-# v0.5.0
+# nice -n 19 python3 stream.py
 
-# run with : nice -n 19 python3 stream.py
-
-# TODO : create setup.py
-# TODO : command line interface
-# TODO :  bluetooth connection, clean code, arduino support, config file, multiscreen support ?
-
-import colorsys
-import cv2
-from mss import mss
-import numpy as np
-from PIL import Image
-from PIL import ImageColor
+import binascii
 import subprocess
 import time
+import cv2
+
+from mss import mss
+
+from PIL import Image
+from PIL import ImageColor
+import numpy as np
+import scipy.cluster
+from lasts_and_tests import util
 
 
-# stream desktop screen and process with colors
+# stream desktop screen and process with color
+
+
 def start():
-
     fps = []
 
     with mss() as sct:
@@ -28,7 +27,6 @@ def start():
         # screen height in pixel
         sheight = 1080
 
-        # resize base for resize image captured and analyse it after
         # high value = low performance but high color fidelity
         # low value = high performance but we lose a little bit in colour fidelity
         # recommended value for FHD screen (1920x1080) : 150
@@ -36,19 +34,17 @@ def start():
         # lowest recommended value for FHD screen (1920x1080) : 25
         resize_base = 50
 
-        # monitor to capture (comment second line if you want to capture custom size on the screen)
-        mon = {'top': 150, 'left': 100, 'width': 1820, 'height': 930}
-        mon = sct.monitors[0]
-
         # don't edit these variables
         ratio = swidth / sheight
         resize_ratio = int(resize_base // ratio)
 
-        # TODO : replace color by last_color after alt + tab bug
+        # mon = {'top': 0, 'left': 0, 'width': 1920, 'height': 1080}
+        mon = sct.monitors[0]
         last_color = [0, 0, 0]
 
-        while 1:
-            # for j in range(1):
+        while True:
+            # i = 0
+            # for i in range(100):
 
             # grab image
             last_time = time.time()
@@ -62,26 +58,8 @@ def start():
             rgb = []
             for key, value in colors["colors"].items():
                 rgb.append(ImageColor.getcolor(value, "RGB"))
-            palette(rgb, True)
+            #palette(rgb, True)
 
-            # get color from lighest
-
-            last_lightest = 0
-            index = 0
-
-            # TODO : remove first color from list and iterate only on the three first colors
-            # get most lightest color in the three first colors
-            for i in range(4):
-                indice = rgb[i][0] + rgb[i][1] + rgb[i][2]
-                if indice > last_lightest:
-                    last_lightest = indice
-                    index = i
-
-
-
-            '''
-            # get color more close from cluster -> not very efficient + performance lose
-            
             num_clusters = 1
 
             im = Image.open('tmp.jpeg')
@@ -99,26 +77,19 @@ def start():
             peak = codes[index_max]
             colour = binascii.hexlify(bytearray(int(c) for c in peak)).decode('ascii')
             m = ImageColor.getcolor("#" + colour, "RGB")
-            
+
             close = 0
             index = 0
 
-            for i in range(10):
-                rmean = int((rgb[i][0] + m[0]) // 2)
-                r = rgb[i][0] + m[0]
-                g = rgb[i][1] + m[1]
-                b = rgb[i][2] + m[2]
-                p = 1/math.sqrt((((512 + rmean) * r * r) >> 8) + 4 * g * g + (((767 - rmean) * b * b) >> 8))
-                palette([rgb[i]], True)
-                print(p)
+            for i in range(5):
+                diffRed = abs(rgb[i][0] - m[0])/255
+                diffGreen = abs(rgb[i][1] - m[1])/255
+                diffBlue = abs(rgb[i][2] - m[2])/255
+                p = (diffRed + diffGreen + diffBlue)/3 * 100
                 if p > close:
-                    close = p
-                    print("Closest : ")
-                    palette([rgb[i]], True)
                     index = i
 
-            # palette([rgb[index], (m[0], m[1], m[2])], True)
-            '''
+            palette([rgb[index], (m[0], m[1], m[2])], True)
 
             # fps calculation and exit
             print("{:.2f}".format(1 / (time.time() - last_time)) + " fps", end='\r')
@@ -143,21 +114,28 @@ def palette(rgb, background=False, legend=[]):
 
         if legend:
             print("\033[%s8;2;%s;%s;%sm%s\033[0m" % (
-                4 if background else 3, rgb[round(i % n)][0], rgb[round(i % n)][1], rgb[round(i % n)][2],
-                " " * (80 // 20)),
+            4 if background else 3, rgb[round(i % n)][0], rgb[round(i % n)][1], rgb[round(i % n)][2], " " * (80 // 20)),
                   end=" " + legend[i % n] + " ")
         else:
             print("\033[%s8;2;%s;%s;%sm%s\033[0m" % (
-                4 if background else 3, rgb[round(i % n)][0], rgb[round(i % n)][1], rgb[round(i % n)][2],
-                " " * (80 // 20)),
+            4 if background else 3, rgb[round(i % n)][0], rgb[round(i % n)][1], rgb[round(i % n)][2], " " * (80 // 20)),
                   end=" ")
 
     print()
 
 
-def colors_to_dict(colors):
-    """Put colors in a dict list."""
+def colors_to_dict(colors, img):
+    """Convert list of colors to pywal format."""
     return {
+        "wallpaper": img,
+        "alpha": util.Color.alpha_num,
+
+        "special": {
+            "background": colors[0],
+            "foreground": colors[15],
+            "cursor": colors[15]
+        },
+
         "colors": {
             "color0": colors[0],
             "color1": colors[1],
@@ -184,9 +162,34 @@ def saturate_colors(colors, amount):
     if amount and float(amount) <= 1.0:
         for i, _ in enumerate(colors):
             if i not in [0, 7, 8, 15]:
-                colors[i] = saturate_color(colors[i], float(amount))
+                colors[i] = util.saturate_color(colors[i], float(amount))
 
     return colors
+
+
+'''
+def get(img, light=False, module="schemer2", sat=""):
+    """Generate a palette."""
+
+    logging.info("Generating a colorscheme.")
+
+    # Dynamically import the backend we want to use.
+    # This keeps the dependencies "optional".
+    try:
+        __import__("backends.%s" % module)
+    except ImportError:
+        __import__("backends.wal")
+        module = "wal"
+
+    logging.info("Using %s backend.", module)
+    module = sys.modules["backends.%s" % module]
+    colors = getattr(module, "get")(img, light)
+    colors = colors_to_dict(saturate_colors(colors, sat), img)
+
+    logging.info("Generation complete.")
+
+    return colors
+'''
 
 
 def gen_colors(img):
@@ -198,19 +201,12 @@ def gen_colors(img):
 
 def adjust(cols, light):
     """Create palette."""
-    res = ["#000000"] * 16
+    cols.sort(key=util.rgb_to_yiq)
+    raw_colors = [*cols[8:], *cols[8:]]
 
-    try:
-        cols.sort(key=rgb_to_yiq)
-        raw_colors = [*cols[8:], *cols[8:]]
-        res = generic_adjust(raw_colors, light)
-    except:
-        pass
-
-    return res
+    return util.generic_adjust(raw_colors, light)
 
 
-# TODO : schemer2 detection and installation
 def get(img, light=False, sat=""):
     """Get colorscheme."""
     '''
@@ -221,66 +217,9 @@ def get(img, light=False, sat=""):
     '''
     cols = [col.decode('UTF-8') for col in gen_colors(img)]
     colors = adjust(cols, light)
-    return colors_to_dict(saturate_colors(colors, sat))
-
-
-def hex_to_rgb(color):
-    """Convert a hex color to rgb."""
-    return tuple(bytes.fromhex(color.strip("#")))
-
-
-def rgb_to_hex(color):
-    """Convert an rgb color to hex."""
-    return "#%02x%02x%02x" % (*color,)
-
-
-def rgb_to_yiq(color):
-    """Sort a list of colors."""
-    return colorsys.rgb_to_yiq(*hex_to_rgb(color))
-
-
-def darken_color(color, amount):
-    """Darken a hex color."""
-    color = [int(col * (1 - amount)) for col in hex_to_rgb(color)]
-    return rgb_to_hex(color)
-
-
-def lighten_color(color, amount):
-    """Lighten a hex color."""
-    color = [int(col + (255 - col) * amount) for col in hex_to_rgb(color)]
-    return rgb_to_hex(color)
-
-
-def saturate_color(color, amount):
-    """Saturate a hex color."""
-    r, g, b = hex_to_rgb(color)
-    r, g, b = [x/255.0 for x in (r, g, b)]
-    h, l, s = colorsys.rgb_to_hls(r, g, b)
-    s = amount
-    r, g, b = colorsys.hls_to_rgb(h, l, s)
-    r, g, b = [x*255.0 for x in (r, g, b)]
-
-    return rgb_to_hex((int(r), int(g), int(b)))
-
-
-def generic_adjust(colors, light):
-    """Generic color adjustment for themers."""
-    if light:
-        for color in colors:
-            color = saturate_color(color, 0.60)
-            color = darken_color(color, 0.5)
-        colors[0] = lighten_color(colors[0], 0.95)
-        colors[7] = darken_color(colors[0], 0.75)
-        colors[8] = darken_color(colors[0], 0.25)
-        colors[15] = colors[7]
-    else:
-        colors[0] = darken_color(colors[0], 0.80)
-        colors[7] = lighten_color(colors[0], 0.75)
-        colors[8] = lighten_color(colors[0], 0.25)
-        colors[15] = colors[7]
-
-    return colors
+    return colors_to_dict(saturate_colors(colors, sat), img)
 
 
 if __name__ == "__main__":
+    # util.setup_logging()
     start()
