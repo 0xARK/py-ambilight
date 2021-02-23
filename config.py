@@ -1,10 +1,10 @@
 import platform
 
 
-#
+# current versio of pyambi
 __version__ = "0.5.0"
 
-#
+# current os platform (Linux, Darwin or Windows)
 OS = platform.uname()[0]
 
 # Go version required for schemer2
