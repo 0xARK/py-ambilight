@@ -2,7 +2,9 @@
 
 # run with : nice -n 19 python3 stream.py
 
-# TODO :  bluetooth connection, clean code, arduino support, led synchronization with wallpaper, multiscreen support ?
+# TODO : create setup.py
+# TODO : command line interface
+# TODO :  bluetooth connection, clean code, arduino support, config file, multiscreen support ?
 
 import colorsys
 import cv2
@@ -79,6 +81,47 @@ def start():
 
             LAST_RGB_COLOR = ImageColor.getcolor(rgb[index], "RGB")
             LAST_HEX_COLOR = rgb[index]
+
+            '''
+            # get color more close from cluster -> not very efficient + performance lose
+            
+            num_clusters = 1
+
+            im = Image.open('tmp.jpeg')
+            im = im.resize((150, 150))  # optional, to reduce time
+            ar = np.asarray(im)
+            shape = ar.shape
+            ar = ar.reshape(np.product(shape[:2]), shape[2]).astype(float)
+
+            codes, dist = scipy.cluster.vq.kmeans(ar, num_clusters)
+
+            vecs, dist = scipy.cluster.vq.vq(ar, codes)  # assign codes
+            counts, bins = np.histogram(vecs, len(codes))  # count occurrences
+
+            index_max = np.argmax(counts)  # find most frequent
+            peak = codes[index_max]
+            colour = binascii.hexlify(bytearray(int(c) for c in peak)).decode('ascii')
+            m = ImageColor.getcolor("#" + colour, "RGB")
+            
+            close = 0
+            index = 0
+
+            for i in range(10):
+                rmean = int((rgb[i][0] + m[0]) // 2)
+                r = rgb[i][0] + m[0]
+                g = rgb[i][1] + m[1]
+                b = rgb[i][2] + m[2]
+                p = 1/math.sqrt((((512 + rmean) * r * r) >> 8) + 4 * g * g + (((767 - rmean) * b * b) >> 8))
+                palette([rgb[i]], True)
+                print(p)
+                if p > close:
+                    close = p
+                    print("Closest : ")
+                    palette([rgb[i]], True)
+                    index = i
+
+            # palette([rgb[index], (m[0], m[1], m[2])], True)
+            '''
 
             # fps calculation and exit
             print("{:.2f}".format(1 / (time.time() - last_time)) + " fps", end='\r')
