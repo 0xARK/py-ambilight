@@ -13,6 +13,9 @@ def install_go_linux(url):
     logging.info("Version 1.15.8 of go language is required and will be installed locally.")
     logging.info("Download in progress, please wait.")
 
+    if not os.path.isdir('./lib'):
+        os.mkdir('lib')
+
     if os.path.isfile('./lib/go/bin/go'):
 
         logging.info(subprocess.check_output(['./lib/go/bin/go', 'version']).decode("utf-8").replace('\n', ''))
