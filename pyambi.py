@@ -1,11 +1,22 @@
+# # # # # # # # # # # # # # # # # # # # # #
+#                               _     _   #
+#                              | |   (_)  #
+#  _ __  _   _   __ _ _ __ ___ | |__  _   #
+# | '_ \| | | | / _` | '_ ` _ \| '_ \| |  #
+# | |_) | |_| || (_| | | | | | | |_) | |  #
+# | .__/ \__, | \__,_|_| |_| |_|_.__/|_|  #
+# | |     __/ |        by mateo castella  #
+# |_|    |___/                            #
+# # # # # # # # # # # # # # # # # # # # # #
+
 import argparse
-import errno
 import logging
 import os
 import sys
 
 from config import __version__
 from setup import setup
+from tests import run_tests
 
 
 def get_args():
@@ -13,12 +24,12 @@ def get_args():
     description = "pyambi - synchronises rgb leds with your screen"
     arg = argparse.ArgumentParser(description=description)
 
-    arg.add_argument("-p", "--preview", action="store_true",
-                     help="See your desktop screen stream. Press q to quit.")
-
     arg.add_argument("-i", "--install", action="store_true",
                      help="Install all necessary dependencies on your platform. Use this command before run \
                           pyambi for the first time.")
+
+    arg.add_argument("-p", "--preview", action="store_true",
+                     help="See your desktop screen stream. Press q to quit.")
 
     arg.add_argument("-q", "--quiet", action="store_true",
                      help="Quiet mode, hide all debug information.")
@@ -27,7 +38,7 @@ def get_args():
                      help="Run pyambi in default mode (bluetooth). Only bluetooth mode is supported at this moment.")
 
     arg.add_argument("-t", "--test", action="store_true",
-                     help="Run test with actual configuration.")
+                     help="Run test with actual configuration for fps performance.")
 
     arg.add_argument("-v", "--version", action="store_true",
                      help="Print pyambi version.")
@@ -45,6 +56,10 @@ def parse_args_exit(parser):
 
     if args.version:
         parser.exit(0, "pyambi %s\n" % __version__)
+
+    if args.test:
+        run_tests()
+        exit(0)
 
     if args.quiet:
         logging.getLogger().disabled = True

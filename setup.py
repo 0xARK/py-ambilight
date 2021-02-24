@@ -1,7 +1,17 @@
+# # # # # # # # # # # # # # # # # # # # # #
+#                               _     _   #
+#                              | |   (_)  #
+#  _ __  _   _   __ _ _ __ ___ | |__  _   #
+# | '_ \| | | | / _` | '_ ` _ \| '_ \| |  #
+# | |_) | |_| || (_| | | | | | | |_) | |  #
+# | .__/ \__, | \__,_|_| |_| |_|_.__/|_|  #
+# | |     __/ |        by mateo castella  #
+# |_|    |___/                            #
+# # # # # # # # # # # # # # # # # # # # # #
+
 import logging
 import os
 import subprocess
-import shutil
 import urllib.request
 
 import config
