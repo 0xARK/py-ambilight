@@ -12,6 +12,7 @@
 import logging
 import os
 import subprocess
+import sys
 import urllib.request
 
 import config
@@ -87,6 +88,19 @@ def install_schemer2():
         logging.info("The dependency has already been downloaded and installed.")
 
 
+def install_pip_packages():
+    """Install all required pip dependencies"""
+    output = subprocess.check_output([sys.executable, '-m', 'pip', 'freeze'])
+    installed_packages = [r.decode().split('==')[0] for r in output.split()]
+
+    for name in config.PIP_DEPENDENCIES:
+        if name not in installed_packages:
+            logging.warning("Pip package " + name + " may not be installed and is about to be reinstalled. Please wait.")
+            subprocess.check_output([sys.executable, "-m", "pip", "install", name])
+        else:
+            logging.info("Pip package " + name + " has been found and will not be installed.")
+
+
 def setup():
     """Install required dependencies"""
     if "GOROOT" in os.environ:
@@ -103,12 +117,16 @@ def setup():
     os.environ['GOPATH'] = subprocess.check_output(['pwd']).decode("utf-8").replace('\n', '') + '/lib'
 
     print()
-    logging.info("Installing dependency 1 of 2.\n")
+    logging.info("Installing dependency, step 1 of 3.\n")
     install_go()
 
     print()
-    logging.info("Installing dependency 2 of 2.\n")
+    logging.info("Installing dependency, step 2 of 3.\n")
     install_schemer2()
+
+    print()
+    logging.info("Installing dependency, step 3 of 3.\n")
+    install_pip_packages()
 
     if goroot_backup != "":
         os.environ['GOROOT'] = goroot_backup

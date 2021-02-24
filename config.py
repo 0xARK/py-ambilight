@@ -10,7 +10,6 @@
 # # # # # # # # # # # # # # # # # # # # # #
 
 import platform
-import mss as sct
 
 # screen width in pixel
 swidth = 1920
@@ -51,3 +50,6 @@ GITHUB_PROJECT = "schemer2"
 
 # basic command for run pyambi project
 RUN_PYAMBI = "python3 pyambi.py"
+
+# pip required dependencies
+PIP_DEPENDENCIES = ["opencv-python", "argparse", "urllib3", "numpy", "mss", "Pillow"]
