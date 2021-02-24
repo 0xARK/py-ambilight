@@ -25,7 +25,7 @@ sheight = 1080
 # lowest recommended value for FHD screen (1920x1080) : 25
 resize_base = 50
 
-# monitor to capture (comment second line if you want to capture custom size on the screen)
+# monitor to capture
 dimension_screen = {'top': 150, 'left': 100, 'width': 1820, 'height': 930}
 current_screen = False
 
@@ -48,3 +48,6 @@ GO_WINDOWS_DOWNLOAD_URL = "https://golang.org/dl/" + GO_VERSION_REQUIRED + ".win
 GITHUB_URL = "github.com"
 GITHUB_USER = "thefryscorer"
 GITHUB_PROJECT = "schemer2"
+
+# basic command for run pyambi project
+RUN_PYAMBI = "python3 pyambi.py"

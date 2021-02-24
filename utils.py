@@ -9,8 +9,13 @@
 # |_|    |___/                            #
 # # # # # # # # # # # # # # # # # # # # # #
 
+import logging
+import os
 import subprocess
 import colorsys
+import sys
+
+from config import RUN_PYAMBI
 
 
 def palette(rgb, background=False, legend=[]):
@@ -74,12 +79,11 @@ def adjust(cols, light):
 # TODO : schemer2 detection and installation
 def get(img, light=False, sat=""):
     """Get colorscheme."""
-    '''
-    if not shutil.which("schemer2"):
-        logging.error("Schemer2 wasn't found on your system.")
-        logging.error("Try another backend. (wal --backend)")
+    if not os.path.isfile("./lib/bin/schemer2"):
+        logging.error("Required dependencies don't seem to be installed. " +
+                      "Please run '" + RUN_PYAMBI + " -i' to install it.")
         sys.exit(1)
-    '''
+
     cols = [col.decode('UTF-8') for col in gen_colors(img)]
     colors = adjust(cols, light)
     return saturate_colors(colors, sat)

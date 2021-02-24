@@ -59,7 +59,7 @@ def parse_args_exit(parser):
 
     if args.test:
         run_tests()
-        exit(0)
+        sys.exit(0)
 
     if args.quiet:
         logging.getLogger().disabled = True
@@ -67,7 +67,7 @@ def parse_args_exit(parser):
 
     if args.install:
         setup()
-        sys.exit(1)
+        sys.exit(0)
 
 
 def parse_args(parser):
