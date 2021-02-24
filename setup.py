@@ -79,10 +79,10 @@ def install_schemer2():
     logging.info("Schemer2 is required and will be installed locally.")
     logging.info("Download and installation in progress, please wait.")
 
-    cwd = './lib/src/' + config.GITHUB_URL + '/' + config.GITHUB_USER + '/' + config.GITHUB_PROJECT
+    cwd = config.GITHUB_URL + '/' + config.GITHUB_USER + '/' + config.GITHUB_PROJECT
 
-    if not os.path.isdir(cwd) and not os.path.isfile('./lib/bin/schemer2'):
-        subprocess.check_output(['./lib/go/bin/go', 'get', 'github.com/thefryscorer/schemer2'])
+    if not os.path.isdir('./lib/src/' + cwd) and not os.path.isfile('./lib/bin/schemer2'):
+        subprocess.check_output(['./lib/go/bin/go', 'get', cwd])
         logging.info("Download and installation finished")
     else:
         logging.info("The dependency has already been downloaded and installed.")
