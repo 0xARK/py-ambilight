@@ -81,7 +81,7 @@ def install_schemer2():
 
     cwd = config.GITHUB_URL + '/' + config.GITHUB_USER + '/' + config.GITHUB_PROJECT
 
-    if not os.path.isdir('./lib/src/' + cwd) and not os.path.isfile('./lib/bin/schemer2'):
+    if not os.path.isdir('./lib/src/' + cwd) or not os.path.isfile('./lib/bin/schemer2'):
         subprocess.check_output(['./lib/go/bin/go', 'get', cwd])
         logging.info("Download and installation finished")
     else:
