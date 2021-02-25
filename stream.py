@@ -23,7 +23,7 @@ from mss import mss
 from mss.models import Size
 from PIL import Image
 from PIL import ImageColor
-from utils import palette, get, rgb_to_hex
+from utils import palette, get, get_lightest, rgb_to_hex
 
 
 def start():
@@ -56,19 +56,7 @@ def start():
             palette(rgb, True)
 
             # get color from lightest
-            last_lightest = 0
-            index = 0
-
-            # TODO : remove first color from list and iterate only on the three first colors
-            # get most lightest color in the three first colors
-            for i in range(4):
-                indice = rgb[i][0] + rgb[i][1] + rgb[i][2]
-                if indice > last_lightest:
-                    last_lightest = indice
-                    index = i
-
-            last_rgb_color = rgb[index]
-            last_hex_color = rgb_to_hex(rgb[index])
+            rgb, hex = get_lightest(rgb)
 
             # fps calculation and exit
             print("{:.2f}".format(1 / (time.time() - last_time)) + " fps", end='\r')
@@ -106,19 +94,7 @@ def start_with_resize():
             palette(rgb, True)
 
             # get color from lightest
-            last_lightest = 0
-            index = 0
-
-            # TODO : remove first color from list and iterate only on the three first colors
-            # get most lightest color in the three first colors
-            for i in range(4):
-                indice = rgb[i][0] + rgb[i][1] + rgb[i][2]
-                if indice > last_lightest:
-                    last_lightest = indice
-                    index = i
-
-            last_rgb_color = rgb[index]
-            last_hex_color = rgb_to_hex(rgb[index])
+            rgb, hex = get_lightest(rgb)
 
             # fps calculation and exit
             print("{:.2f}".format(1 / (time.time() - last_time)) + " fps", end='\r')

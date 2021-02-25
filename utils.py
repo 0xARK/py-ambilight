@@ -86,7 +86,7 @@ def get(img, light=False, sat=""):
 
     cols = [col.decode('UTF-8') for col in gen_colors(img)]
     colors = adjust(cols, light)
-    return saturate_colors(colors, sat)
+    return saturate_colors(colors, sat)[1:4]
 
 
 def get_lightest(rgb):
@@ -94,14 +94,13 @@ def get_lightest(rgb):
     last_lightest = 0
     index = 0
 
-    # TODO : remove first color from list and iterate only on the three first colors
     for i in range(len(rgb)):
         indice = rgb[i][0] + rgb[i][1] + rgb[i][2]
         if indice > last_lightest:
             last_lightest = indice
             index = i
 
-    return rgb[index]
+    return rgb[index], rgb_to_hex(rgb[index])
 
 
 def hex_to_rgb(color):

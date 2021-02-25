@@ -60,19 +60,7 @@ def test_fps():
                 rgb[i] = ImageColor.getcolor(rgb[i], "RGB")
 
             # get color from lightest
-            last_lightest = 0
-            index = 0
-
-            # TODO : remove first color from list and iterate only on the three first colors
-            # get most lightest color in the three first colors
-            for i in range(4):
-                indice = rgb[i][0] + rgb[i][1] + rgb[i][2]
-                if indice > last_lightest:
-                    last_lightest = indice
-                    index = i
-
-            last_rgb_color = rgb[index]
-            last_hex_color = rgb_to_hex(rgb[index])
+            rgb, hex = get_lightest(rgb)
 
             # fps calculation
             fps.append(1 / (time.time() - last_time))
@@ -103,8 +91,7 @@ def test_color():
         rgb = get("tests/tmp_tests.jpeg")
         for i in range(len(rgb)):
             rgb[i] = ImageColor.getcolor(rgb[i], "RGB")
-        rgb = rgb[1:4]
-        rgb = get_lightest(rgb)
+        rgb, hex = get_lightest(rgb)
         difference = math.sqrt((rgb[0] - rgb_color[0])*(rgb[0] - rgb_color[0]) + (rgb[1] - rgb_color[1])*(rgb[1] - rgb_color[1]) + (rgb[2] - rgb_color[2])*(rgb[2] - rgb_color[2]))
         percentage = difference/math.sqrt(255 ^ 2 + 255 ^ 2 + 255 ^ 2)
         logging.info("RGB color detected : " + str(rgb))
