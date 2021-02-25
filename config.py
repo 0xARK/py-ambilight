@@ -9,6 +9,7 @@
 # |_|    |___/                            #
 # # # # # # # # # # # # # # # # # # # # # #
 
+
 # screen width in pixel
 swidth = 1920
 # screen height in pixel
@@ -21,7 +22,16 @@ sheight = 1080
 # High value = lower performance but more accurate colour detection
 # Low value = better performance but slightly less accurate colour detection
 # After changing this variable, don't forget to test performance by running pyambi with '-t' parameter.
-resize_base = 540
+resize_base = 50
+
+
+# Possible values :
+# True, False
+#
+# If force_resize = True, the image processing time will be doubled, but colours detected will be closer to reality.
+# You can always lower 'resize_base' to improve performance and stability of detection
+# After changing this variable, don't forget to test performance by running pyambi with '-t' parameter.
+force_resize = True
 
 
 # Possible values :

@@ -13,14 +13,14 @@ import logging
 import math
 import time
 import numpy as np
+import config
 
 from mss import mss
 from mss.models import Size
 from PIL import Image
 from PIL import ImageColor
 
-from utils import palette, rgb_to_hex, get, get_lightest
-from config import swidth, sheight, dimension_screen, current_screen, resize_base
+from utils import rgb_to_hex, get, get_lightest
 
 
 def test_fps():
@@ -29,32 +29,37 @@ def test_fps():
 
     with mss() as sct:
 
-        ratio = swidth / sheight
-        resize_ratio = int(resize_base // ratio)
+        ratio = config.swidth / config.sheight
+        resize_ratio = int(config.resize_base // ratio)
 
-        monitor = dimension_screen
+        monitor = config.dimension_screen
 
-        if current_screen:
+        if config.current_screen:
             monitor = sct.monitors[0]
 
         for i in range(100):
 
             print("test " + str(i + 1) + "/100", end="\r" if i < 99 else "\n")
 
-            # grab image
+            # grab image, resize it and save it
             last_time = time.time()
             img = sct.grab(monitor)
 
-            # calcul current dominant color
-            img = Image.frombytes("RGB", Size(width=resize_base, height=resize_ratio), img.bgra, "raw", "BGRX")
+            if config.force_resize:
+                img = Image.frombytes("RGB", img.size, img.bgra, "raw", "BGRX")
+                img = img.resize((config.resize_base, resize_ratio))
+            else:
+                img = Image.frombytes("RGB", Size(width=config.resize_base, height=resize_ratio), img.bgra, "raw",
+                                      "BGRX")
+
             img.save("tests/tmp_tests.jpeg", "JPEG")
+
+            # get three current dominant color and convert them from hex to rgb
             rgb = get("tests/tmp_tests.jpeg")
             for i in range(len(rgb)):
                 rgb[i] = ImageColor.getcolor(rgb[i], "RGB")
-            # stream.palette(rgb, True)
 
-            # get color from lighest
-
+            # get color from lightest
             last_lightest = 0
             index = 0
 
@@ -86,14 +91,14 @@ def test_fps():
 
 def test_color():
     """Test color detection."""
-    ratio = swidth / sheight
-    resize_ratio = int(resize_base // ratio)
+    ratio = config.swidth / config.sheight
+    resize_ratio = int(config.resize_base // ratio)
 
     def test_one_color(text_color, rgb_color):
         """Test detection for one given color."""
         logging.info("Test detection of " + text_color + " color.")
         img = Image.open("tests/" + text_color + "_tests.jpeg")
-        img = img.resize((resize_base, resize_ratio))
+        img = img.resize((config.resize_base, resize_ratio))
         img.save("tests/tmp_tests.jpeg", "JPEG")
         rgb = get("tests/tmp_tests.jpeg")
         for i in range(len(rgb)):
