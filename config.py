@@ -14,14 +14,25 @@ swidth = 1920
 # screen height in pixel
 sheight = 1080
 
-# resize base for resize image captured and analyse it after
-# high value = low performance but high color fidelity
-# low value = high performance but we lose a little bit in colour fidelity
-# recommended value for FHD screen (1920x1080) : 150
-# highest recommended value for FHD screen (1920x1080) : 500
-# lowest recommended value for FHD screen (1920x1080) : 25
-resize_base = 50
 
-# monitor to capture
-dimension_screen = {'top': 150, 'left': 100, 'width': 1820, 'height': 930}
+# Possible values :
+# any number as long as resize_base <= screen height in pixel (for FHD screen, recommended between 50 and 540)
+#
+# High value = lower performance but more accurate colour detection
+# Low value = better performance but slightly less accurate colour detection
+# After changing this variable, don't forget to test performance by running pyambi with '-t' parameter.
+resize_base = 540
+
+
+# Possible values :
+# False, True
+#
+# If current_screen = True, the colour detection will be done on the whole screen.
 current_screen = False
+
+
+# Possible values :
+# any number as long as top + height <= screen height in pixel and as long as left + width <= screen width in pixel
+#
+# If current screen = False, the colour detection will be done on the captured image between these coordinates.
+dimension_screen = {'top': 150, 'left': 100, 'width': 1820, 'height': 930}
