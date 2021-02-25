@@ -15,7 +15,7 @@ import subprocess
 import colorsys
 import sys
 
-from config import RUN_PYAMBI
+from const import RUN_PYAMBI
 
 
 def palette(rgb, background=False, legend=[]):

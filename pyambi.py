@@ -14,8 +14,8 @@ import logging
 import os
 import sys
 
-from config import __version__
-from setup import setup
+from const import __version__
+from dependencies import setup
 from tests import run_tests
 
 

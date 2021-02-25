@@ -15,12 +15,11 @@ import subprocess
 import sys
 import urllib.request
 
-import config
+import const
 
 
 def install_go_linux(url):
     """Check for go language version on linux and install it."""
-
     logging.info("Version 1.15.8 of go language is required and will be installed locally.")
     logging.info("Download in progress, please wait.")
 
@@ -37,7 +36,7 @@ def install_go_linux(url):
         logging.info("The file has already been downloaded.")
         logging.info("Start installation.")
         subprocess.check_output(['tar', '-C', './lib', '-xzf',
-                                 './lib/' + config.GO_VERSION_REQUIRED + '.linux-amd64.tar.gz'])
+                                 './lib/' + const.GO_VERSION_REQUIRED + '.linux-amd64.tar.gz'])
         logging.info(subprocess.check_output(['./lib/go/bin/go', 'version']).decode("utf-8").replace('\n', ''))
         logging.info("Installation of version 1.15.8 finished.")
 
@@ -47,7 +46,7 @@ def install_go_linux(url):
         logging.info("Download finished.")
         logging.info("Start installation.")
         subprocess.check_output(['tar', '-C', './lib', '-xzf',
-                                 './lib/' + config.GO_VERSION_REQUIRED + '.linux-amd64.tar.gz'])
+                                 './lib/' + const.GO_VERSION_REQUIRED + '.linux-amd64.tar.gz'])
         logging.info(subprocess.check_output(['./lib/go/bin/go', 'version']).decode("utf-8").replace('\n', ''))
         logging.info("Installation of version 1.15.8 finished.")
 
@@ -64,12 +63,12 @@ def install_go():
     """Install go locally on current OS."""
 
     # TODO : MacOS and Windows dependencies installation
-    if config.OS == 'Linux':
-        install_go_linux(config.GO_LINUX_DOWNLOAD_URL)
+    if const.OS == 'Linux':
+        install_go_linux(const.GO_LINUX_DOWNLOAD_URL)
     # elif OS == 'Darwin':
-    #     install_go_darwin(config.GO_DARWIN_DOWNLOAD_URL)
+    #     install_go_darwin(const.GO_DARWIN_DOWNLOAD_URL)
     # elif OS == "Windows":
-    #     install_go_windows(config.GO_WINDOWS_DOWNLOAD_URL)
+    #     install_go_windows(const.GO_WINDOWS_DOWNLOAD_URL)
     else:
         logging.error("Sorry, this OS is not currently supported.")
 
@@ -79,7 +78,7 @@ def install_schemer2():
     logging.info("Schemer2 is required and will be installed locally.")
     logging.info("Download and installation in progress, please wait.")
 
-    cwd = config.GITHUB_URL + '/' + config.GITHUB_USER + '/' + config.GITHUB_PROJECT
+    cwd = const.GITHUB_URL + '/' + const.GITHUB_USER + '/' + const.GITHUB_PROJECT
 
     if not os.path.isdir('./lib/src/' + cwd) or not os.path.isfile('./lib/bin/schemer2'):
         subprocess.check_output(['./lib/go/bin/go', 'get', cwd])
@@ -93,7 +92,7 @@ def install_pip_packages():
     output = subprocess.check_output([sys.executable, '-m', 'pip', 'freeze'])
     installed_packages = [r.decode().split('==')[0] for r in output.split()]
 
-    for name in config.PIP_DEPENDENCIES:
+    for name in const.PIP_DEPENDENCIES:
         if name not in installed_packages:
             logging.warning("Pip package " + name + " may not be installed and is about to be reinstalled. Please wait.")
             subprocess.check_output([sys.executable, "-m", "pip", "install", name])
