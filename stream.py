@@ -19,16 +19,27 @@ import time
 import config
 import cv2
 import numpy as np
+import pygatt
+
 from mss import mss
 from mss.models import Size
 from PIL import Image
 from PIL import ImageColor
 from utils import palette, get, get_lightest, rgb_to_hex
+from config import led_mac_address
 
 
 def start():
     """Stream desktop screen and process with image."""
     fps = []
+
+    mac = "BE:FF:20:00:FE:37"
+    service = "0x0011"
+
+    adapter = pygatt.GATTToolBackend()
+    adapter.start()
+
+    device = adapter.connect(mac, 15)
 
     with mss() as sct:
 
@@ -53,10 +64,16 @@ def start():
             rgb = get("tmp.jpeg")
             for i in range(len(rgb)):
                 rgb[i] = ImageColor.getcolor(rgb[i], "RGB")
-            palette(rgb, True)
+            # palette(rgb, True)
 
-            # get color from lightest
+            # get color from lightest and send it to leds
             rgb, hex = get_lightest(rgb)
+            hex = hex[1:]
+            out = [(hex[i:i + 2]) for i in range(0, len(hex), 2)]
+
+            device.char_write("0000fff3-0000-1000-8000-00805f9b34fb",
+                              [0x7e, 0x00, 0x05, 0x03, int("0x" + out[0], 16), int("0x" + out[1], 16),
+                               int("0x" + out[2], 16), 0x00, 0xef], wait_for_response=False)
 
             # fps calculation and exit
             print("{:.2f}".format(1 / (time.time() - last_time)) + " fps", end='\r')
@@ -66,6 +83,14 @@ def start():
 def start_with_resize():
     """Stream desktop screen and process with resized image."""
     fps = []
+
+    mac = "BE:FF:20:00:FE:37"
+    service = "0x0011"
+
+    adapter = pygatt.GATTToolBackend()
+    adapter.start()
+
+    device = adapter.connect(mac, 15)
 
     with mss() as sct:
 
@@ -95,6 +120,11 @@ def start_with_resize():
 
             # get color from lightest
             rgb, hex = get_lightest(rgb)
+            hex = hex[1:]
+            out = [(hex[i:i + 2]) for i in range(0, len(hex), 2)]
+
+            device.char_write("0000fff3-0000-1000-8000-00805f9b34fb",
+                              [0x7e, 0x00, 0x05, 0x03, int("0x" + out[0], 16), int("0x" + out[1], 16), int("0x" + out[2], 16), 0x00, 0xef], wait_for_response=False)
 
             # fps calculation and exit
             print("{:.2f}".format(1 / (time.time() - last_time)) + " fps", end='\r')

@@ -9,6 +9,11 @@
 # |_|    |___/                            #
 # # # # # # # # # # # # # # # # # # # # # #
 
+# The mac address of the leds is required to connect to them by bluetooth. To find the mac address, turn on your leds
+# and a computer, then open the bluetooth settings. In the list of available devices you can see your leds and get
+# their mac address.
+led_mac_address = ""
+
 
 # screen width in pixel
 swidth = 1920

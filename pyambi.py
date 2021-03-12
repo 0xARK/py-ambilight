@@ -17,6 +17,7 @@ import sys
 from const import __version__
 from dependencies import setup
 from tests import run_tests
+from stream import stream
 
 
 def get_args():
@@ -27,9 +28,6 @@ def get_args():
     arg.add_argument("-i", "--install", action="store_true",
                      help="Install all necessary dependencies on your platform. Use this command before run \
                           pyambi for the first time.")
-
-    arg.add_argument("-p", "--preview", action="store_true",
-                     help="See your desktop screen stream. Press q to quit.")
 
     arg.add_argument("-q", "--quiet", action="store_true",
                      help="Quiet mode, hide all debug information.")
@@ -77,6 +75,9 @@ def parse_args(parser):
     if args.quiet:
         logging.getLogger().disabled = True
         sys.stdout = sys.stderr = open(os.devnull, "w")
+
+    if args.run:
+        stream()
 
 
 def main():
