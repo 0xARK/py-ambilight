@@ -1,5 +1,6 @@
 # py-ambilight
 
+Multiplatform ambilight tool for RGB leds, made in python.
 
 ## Installation on linux
 
