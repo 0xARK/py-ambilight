@@ -4,8 +4,12 @@ Multiplatform ambilight tool for RGB leds, made in python.
 
 ## Installation on linux
 
-```
-python3 -m pip install -r requirements.txt
+```shell
+> # First create and activate a Python virtualenv
+> python3 -m venv venv
+> source venv/bin/activate
+> # Install the dependencies in this venv
+> pip install -r requirements.txt
 ```
 
 ## Contributions
