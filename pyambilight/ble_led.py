@@ -1,5 +1,7 @@
-from bluepy.btle import Peripheral
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
+from bluepy.btle import Peripheral
 
 # Brightness in percent (0-100)
 def brightness(percent):

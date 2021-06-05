@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 # # # # # # # # # # # # # # # # # # # # # #
 #                               _     _   #
 #                              | |   (_)  #
@@ -13,14 +16,14 @@ import logging
 import math
 import time
 import numpy as np
-import config
+from .config import *
 
 from mss import mss
 from mss.models import Size
 from PIL import Image
 from PIL import ImageColor
 
-from utils import rgb_to_hex, get, get_lightest
+from utils import rgb_to_hex, get, get_brightest_color
 
 
 def test_fps():
@@ -60,7 +63,7 @@ def test_fps():
                 rgb[i] = ImageColor.getcolor(rgb[i], "RGB")
 
             # get color from lightest
-            rgb, hex = get_lightest(rgb)
+            rgb, hex = get_brightest_color(rgb)
 
             # fps calculation
             fps.append(1 / (time.time() - last_time))
@@ -91,7 +94,7 @@ def test_color():
         rgb = get("tests/tmp_tests.jpeg")
         for i in range(len(rgb)):
             rgb[i] = ImageColor.getcolor(rgb[i], "RGB")
-        rgb, hex = get_lightest(rgb)
+        rgb, hex = get_brightest_color(rgb)
         difference = math.sqrt((rgb[0] - rgb_color[0])*(rgb[0] - rgb_color[0]) + (rgb[1] - rgb_color[1])*(rgb[1] - rgb_color[1]) + (rgb[2] - rgb_color[2])*(rgb[2] - rgb_color[2]))
         percentage = difference/math.sqrt(255 ^ 2 + 255 ^ 2 + 255 ^ 2)
         logging.info("RGB color detected : " + str(rgb))

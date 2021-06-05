@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 # # # # # # # # # # # # # # # # # # # # # #
 #                               _     _   #
 #                              | |   (_)  #
@@ -16,7 +19,7 @@
 # TODO :  bluetooth connection, arduino support, led synchronization with wallpaper, multiscreen support ?
 import logging
 import time
-import config
+from ..config import *
 import cv2
 import numpy as np
 import pygatt
@@ -26,9 +29,8 @@ from mss import mss
 from mss.models import Size
 from PIL import Image
 from PIL import ImageColor
-from utils import palette, get, get_lightest
-from config import led_mac_address
-from ble_led import Led
+from ..utils import palette, get_colorscheme, get_brightest_color
+from ..ble_led import Led
 from apscheduler.schedulers.blocking import BlockingScheduler
 
 led = Led("BE:FF:20:00:FE:37", "fff0", "0000fff3-0000-1000-8000-00805f9b34fb")
@@ -70,12 +72,12 @@ def start():
             img.save("tmp.jpeg", "JPEG")
 
             # get three current dominant color and convert them from hex to rgb
-            rgb = get("tmp.jpeg")
+            rgb = get_colorscheme("tmp.jpeg")
             for i in range(len(rgb)):
                 rgb[i] = ImageColor.getcolor(rgb[i], "RGB")
 
             # get color from lightest and send it to leds
-            rgb, hex = get_lightest(rgb)
+            rgb, hex = get_brightest_color(rgb)
             palette([rgb], True)
 
             h, l, s = colorsys.rgb_to_hls(rgb[0], rgb[1], rgb[2])
@@ -118,12 +120,12 @@ def start_with_resize():
             img.save("tmp.jpeg", "JPEG")
 
             # get three current dominant color
-            rgb = get("tmp.jpeg")
+            rgb = get_colorscheme("tmp.jpeg")
             for i in range(len(rgb)):
                 rgb[i] = ImageColor.getcolor(rgb[i], "RGB")
 
             # get color from lightest
-            rgb, hex = get_lightest(rgb)
+            rgb, hex = get_brightest_color(rgb)
             palette([rgb], True)
 
             # h, s, v = colorsys.rgb_to_hsv(rgb[0], rgb[1], rgb[2])

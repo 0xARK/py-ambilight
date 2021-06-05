@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 # # # # # # # # # # # # # # # # # # # # # #
 #                               _     _   #
 #                              | |   (_)  #
@@ -15,7 +18,7 @@ import subprocess
 import sys
 import urllib.request
 
-import const
+from .const import *
 
 
 def install_go_linux(url):

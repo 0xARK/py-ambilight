@@ -1,33 +1,26 @@
-# # # # # # # # # # # # # # # # # # # # # #
-#                               _     _   #
-#                              | |   (_)  #
-#  _ __  _   _   __ _ _ __ ___ | |__  _   #
-# | '_ \| | | | / _` | '_ ` _ \| '_ \| |  #
-# | |_) | |_| || (_| | | | | | | |_) | |  #
-# | .__/ \__, | \__,_|_| |_| |_|_.__/|_|  #
-# | |     __/ |        by mateo castella  #
-# |_|    |___/                            #
-# # # # # # # # # # # # # # # # # # # # # #
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# File name          :
+# Author             :
+# Date created       :
+# Date last modified :
+# Python Version     : 3.*
+
+import pyambilight
 
 import argparse
 import logging
 import os
 import sys
 
-from const import __version__
-from dependencies import setup
-from tests import run_tests
-from stream import stream
-
-
 def get_args():
     """Get the script arguments."""
     description = "pyambi - synchronises rgb leds with your screen"
     arg = argparse.ArgumentParser(description=description)
 
-    arg.add_argument("-i", "--install", action="store_true",
-                     help="Install all necessary dependencies on your platform. Use this command before run \
-                          pyambi for the first time.")
+    #arg.add_argument("-i", "--install", action="store_true",
+    #                 help="Install all necessary dependencies on your platform. Use this command before run \
+    #                      pyambi for the first time.")
 
     arg.add_argument("-q", "--quiet", action="store_true",
                      help="Quiet mode, hide all debug information.")
@@ -56,7 +49,7 @@ def parse_args_exit(parser):
         parser.exit(0, "pyambi %s\n" % __version__)
 
     if args.test:
-        run_tests()
+        pyambilight.tests.run_tests()
         sys.exit(0)
 
     if args.quiet:
@@ -64,7 +57,7 @@ def parse_args_exit(parser):
         sys.stdout = sys.stderr = open(os.devnull, "w")
 
     if args.install:
-        setup()
+        pyambilight.dependencies.setup()
         sys.exit(0)
 
 
@@ -77,19 +70,19 @@ def parse_args(parser):
         sys.stdout = sys.stderr = open(os.devnull, "w")
 
     if args.run:
-        stream()
+        pyambilight.stream.stream()
 
 
 def main():
     """Main script function."""
-    logging.basicConfig(format=("[%(levelname)s\033[0m] "
-                                "\033[1;31m%(module)s\033[0m: "
+    logging.basicConfig(format=("[%(levelname)s\x1b[0m] "
+                                "\x1b[1;31m%(module)s\x1b[0m: "
                                 "%(message)s"),
                         level=logging.INFO,
                         stream=sys.stdout)
-    logging.addLevelName(logging.ERROR, '\033[1;31mE')
-    logging.addLevelName(logging.INFO, '\033[1;32mI')
-    logging.addLevelName(logging.WARNING, '\033[1;33mW')
+    logging.addLevelName(logging.ERROR, '\x1b[1;31mE')
+    logging.addLevelName(logging.INFO, '\x1b[1;32mI')
+    logging.addLevelName(logging.WARNING, '\x1b[1;33mW')
 
     parser = get_args()
 
